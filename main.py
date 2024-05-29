@@ -23,16 +23,21 @@ def webhook():
         return "Unauthorized", 403
     payload = request.json
     if payload.get("object_kind") == "merge_request":
-        if payload["object_attributes"]["action"] != "open":
-            return "Not a  PR open", 200
+        # if payload["object_attributes"]["action"] != "open":
+        #     return "Not a  PR open", 200 
         project_id = payload["project"]["id"]
         mr_id = payload["object_attributes"]["iid"]
         changes_url = f"{gitlab_url}/projects/{project_id}/merge_requests/{mr_id}/changes"
 
-        headers = {"Private-Token": gitlab_token}
-        response = requests.get(changes_url, headers=headers)
-        mr_changes = response.json()
+        print(changes_url, flush=True)
 
+        headers = {"Private-Token": gitlab_token}
+        print(headers, flush=True)
+        print("CIAO", flush=True)
+        response = requests.get(changes_url, headers=headers)
+ 
+        mr_changes = response.json()
+      
         diffs = [change["diff"] for change in mr_changes["changes"]]
 
         pre_prompt = "Review the following git diff code changes, focusing on structure, security, and clarity."
